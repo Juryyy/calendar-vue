@@ -1,7 +1,7 @@
 <template>
   <v-container>
   <v-responsive :aspect-ratio="4 / 3" class="border pa-4">
-  <VDatePicker v-model.string="state.date" mode="date" is-required :masks="masks" :disabledDates="disabledDates" />
+  <VDatePicker v-model.string="state.date" mode="date" is-required :masks="masks" :disabledDates="disabledDates" is-dark="system" :min-date="new Date()" />
   {{ state.date }}
   <EventPicker />
 </v-responsive>
@@ -31,5 +31,4 @@ const disabledDates = ref([
     }
   }
 ])
-
 </script>
