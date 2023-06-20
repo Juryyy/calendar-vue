@@ -1,5 +1,6 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
+import Calendar from '@/components/Calendar.vue'
 
 const routes = [
   {
@@ -15,6 +16,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
       },
     ],
+  },
+  {
+    path: '/calendar',
+    component: Calendar,
+    name: 'Calendar',
   },
 ]
 

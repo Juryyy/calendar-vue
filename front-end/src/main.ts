@@ -13,8 +13,13 @@ import { createApp } from 'vue'
 // Plugins
 import { registerPlugins } from '@/plugins'
 
+// VCalendar
+import VCalendar from 'v-calendar';
+import 'v-calendar/style.css';
+
 const app = createApp(App)
 
 registerPlugins(app)
 
 app.mount('#app')
+app.use(VCalendar, {})
