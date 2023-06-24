@@ -5,7 +5,6 @@ import { google } from 'googleapis';
 import { authenticate } from '@google-cloud/local-auth';
 import { OAuth2Client } from 'google-auth-library';
 import dotenv from 'dotenv';
-import { googleEvent } from '@prisma/client';
 dotenv.config({ path: './back-end/.env' });
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
@@ -100,25 +99,3 @@ async function authorize() {
   }
 
 export {fetchEvents, createEvent, authorize};
-
-async function listEvents(auth : any) {
-  const calendar = google.calendar({version: 'v3', auth});
-  const res = await calendar.events.list({
-    calendarId: 'primary',
-    timeMin: new Date().toISOString(),
-    maxResults: 10,
-    singleEvents: true,
-    orderBy: 'startTime',
-  });
-  const events = res.data.items;
-  if (!events || events.length === 0) {
-    console.log('No upcoming events found.');
-    return;
-  }
-  console.log('Upcoming 10 events:');
-  events.map((event, i) => {
-    console.log(event);
-  });
-}
-
-authorize().then(listEvents).catch(console.error);

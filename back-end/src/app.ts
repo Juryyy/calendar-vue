@@ -1,7 +1,6 @@
 import cors from 'cors';
 import express, { Express, Request, Response } from 'express';
 import router from './router';
-import dotEnv from 'dotenv';
 
 const app: Express = express();
 
@@ -11,6 +10,8 @@ app.use(express.json());
 
 app.use(router);
 
-app.listen(dotEnv.config({ path: './back-end/.env' }), () => {
+app.listen(4000, () => {
   console.log('Server running on port 4000');
 });
+
+export default app;
