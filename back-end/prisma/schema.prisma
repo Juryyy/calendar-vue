@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,41 +8,40 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  firstName String
-  password  String
-  lastName  String
-  role      Role     @default(VISITOR)
-  events    inputEvent[]
+  id             Int             @id @default(autoincrement())
+  email          String          @unique
+  firstName      String
+  password       String
+  lastName       String
+  role           Role            @default(VISITOR)
   calendarEvents calendarEvent[]
+  events         inputEvent[]
 }
 
+model inputEvent {
+  id     Int      @id @default(autoincrement())
+  title  String
+  start  DateTime
+  end    DateTime
+  allDay Boolean
+  userId Int
+  user   User     @relation(fields: [userId], references: [id])
+}
+
+model calendarEvent {
+  id      Int      @id @default(autoincrement())
+  title   String
+  start   DateTime
+  end     DateTime
+  allDay  Boolean
+  eventId Int      @unique
+  userId  Int
+  user    User     @relation(fields: [userId], references: [id])
+}
 
 enum Role {
   VISITOR
   USER
   ADMIN
   EMPLOYEE
-}
-
-model inputEvent {
-  id        Int      @id @default(autoincrement())
-  title     String
-  start     DateTime
-  end       DateTime
-  allDay    Boolean
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-}
-
-model calendarEvent {
-  id        Int      @id @default(autoincrement())
-  title     String
-  start     DateTime
-  end       DateTime
-  allDay    Boolean
-  eventId   Int     @unique
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
 }

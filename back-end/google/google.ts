@@ -13,7 +13,6 @@ const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 const CALENDAR_ID = process.env.CALENDAR_ID;
 
-
 //Api cally
 async function fetchEvents(auth : any){
     console.log(CALENDAR_ID)
@@ -28,6 +27,27 @@ async function fetchEvents(auth : any){
     });
 
     console.log(events.data.items);
+}
+
+async function createEvent(auth : any, data : any){
+    const client = await authorize();
+    const calendar = google.calendar({version: 'v3', auth});
+    const event = await calendar.events.insert({
+        calendarId: CALENDAR_ID,
+        requestBody: {
+            summary: data.summary,
+            description: data.description,
+            start: {
+                dateTime: data.start,
+                timeZone: 'Europe/Prague',
+            },
+            end: {
+                dateTime: data.end,
+                timeZone: 'Europe/Prague',
+            },
+        },
+    });
+    console.log(event.data);
 }
 
 //Funkce k ukládání token.json + authorize
@@ -68,8 +88,6 @@ async function authorize() {
     }
     return client;
   }
-  
 
-// finální funkce
+export {fetchEvents, createEvent, authorize};
 
-authorize().then(fetchEvents).catch(console.error)
