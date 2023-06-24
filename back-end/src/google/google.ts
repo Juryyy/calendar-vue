@@ -5,6 +5,7 @@ import { google } from 'googleapis';
 import { authenticate } from '@google-cloud/local-auth';
 import { OAuth2Client } from 'google-auth-library';
 import dotenv from 'dotenv';
+import { googleEvent } from '@prisma/client';
 dotenv.config({ path: './back-end/.env' });
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
@@ -15,23 +16,26 @@ const CALENDAR_ID = process.env.CALENDAR_ID;
 
 //Api cally
 async function fetchEvents(auth : any){
-    console.log(CALENDAR_ID)
-    const client = await authorize();
-    const calendar = google.calendar({version: 'v3', auth});
-    const events = await calendar.events.list({
-        calendarId: CALENDAR_ID,
-        timeMin: (new Date()).toISOString(),
-        maxResults: 100,
-        singleEvents: true,
-        orderBy: 'startTime',
-    });
-
-    console.log(events.data.items);
+  const calendar = google.calendar({version: 'v3', auth});
+  try {
+      const events = await calendar.events.list({
+          calendarId: CALENDAR_ID,
+          timeMin: (new Date()).toISOString(),
+          maxResults: 100,
+          singleEvents: true,
+          orderBy: 'startTime',
+      });
+      return {events: events.data.items, error: null};
+  } catch (error: any) {
+      return {
+          error: error.response?.data?.message ?? "Unknown error",
+      };
+  }
 }
 
 async function createEvent(auth : any, data : any){
-    const client = await authorize();
     const calendar = google.calendar({version: 'v3', auth});
+    try{
     const event = await calendar.events.insert({
         calendarId: CALENDAR_ID,
         requestBody: {
@@ -48,6 +52,12 @@ async function createEvent(auth : any, data : any){
         },
     });
     console.log(event.data);
+  return { error: null };
+  } catch (error: any) {
+  return {
+    error: error.response?.data?.message ?? "Unknown error",
+  };
+}
 }
 
 //Funkce k ukládání token.json + authorize
@@ -91,3 +101,24 @@ async function authorize() {
 
 export {fetchEvents, createEvent, authorize};
 
+async function listEvents(auth : any) {
+  const calendar = google.calendar({version: 'v3', auth});
+  const res = await calendar.events.list({
+    calendarId: 'primary',
+    timeMin: new Date().toISOString(),
+    maxResults: 10,
+    singleEvents: true,
+    orderBy: 'startTime',
+  });
+  const events = res.data.items;
+  if (!events || events.length === 0) {
+    console.log('No upcoming events found.');
+    return;
+  }
+  console.log('Upcoming 10 events:');
+  events.map((event, i) => {
+    console.log(event);
+  });
+}
+
+authorize().then(listEvents).catch(console.error);

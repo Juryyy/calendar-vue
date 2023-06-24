@@ -21,19 +21,20 @@ model User {
 model inputEvent {
   id     Int      @id @default(autoincrement())
   title  String
+  description String
   start  DateTime
   end    DateTime
-  allDay Boolean
   userId Int
+  uploaded Boolean
   user   User     @relation(fields: [userId], references: [id])
 }
 
 model googleEvent {
   id      Int      @id @default(autoincrement())
   title   String
+  description String
   start   DateTime
   end     DateTime
-  allDay  Boolean
   calEventId Int      @unique
   userId  Int
   user    User     @relation(fields: [userId], references: [id])

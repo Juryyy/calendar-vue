@@ -17,6 +17,21 @@ export default {
         });
     },
 
-    
+    async getEventsWithUploadedFalse(){
+        return await prisma.inputEvent.findMany({
+            where: {
+                uploaded: false
+            }
+        });
+    },
+
+    async updateEvent(id: number, event: inputEvent){
+        return await prisma.inputEvent.update({
+            where: {
+                id: id
+            },
+            data: event
+        });
+    },
 
 }

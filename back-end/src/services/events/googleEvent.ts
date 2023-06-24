@@ -3,7 +3,7 @@ import {PrismaClient, googleEvent} from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default {
-    async createEvent(event : googleEvent){
+    async createEvent(event : Omit<googleEvent, "id">){
         return await prisma.googleEvent.create({
             data: event
         });
