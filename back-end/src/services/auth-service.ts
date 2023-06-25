@@ -17,7 +17,6 @@ export default{
             }
         );
     },
-
     hashPassword: (password: string) => {
         return crypto.pbkdf2Sync(
             password,
