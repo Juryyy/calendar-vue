@@ -35,7 +35,7 @@ model googleEvent {
   description String
   start   DateTime
   end     DateTime
-  calEventId Int      @unique
+  calEventId String      @unique
   userId  Int
   user    User     @relation(fields: [userId], references: [id])
 }

@@ -1,2 +1,14 @@
 ### Get events
 GET http://localhost:4000/events/all
+
+### Create event
+POST http://localhost:4000/events/create
+Content-Type: application/json
+
+{
+    "title": "My 3rd Event",
+    "description": "This is my event",
+    "start": "2023-06-25T12:00:00.000Z",
+    "end": "2023-06-25T13:00:00.000Z",
+    "userId": 1
+}

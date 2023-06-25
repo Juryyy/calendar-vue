@@ -33,26 +33,29 @@ async function fetchEvents(auth : any){
 }
 
 async function createEvent(auth : any, data : any){
+  console.log("createEvent")
     const calendar = google.calendar({version: 'v3', auth});
     try{
+    console.log("creating event", data)
     const event = await calendar.events.insert({
         calendarId: CALENDAR_ID,
         requestBody: {
             summary: data.summary,
             description: data.description,
             start: {
-                dateTime: data.start,
+                dateTime: data.start.dateTime,
                 timeZone: 'Europe/Prague',
             },
             end: {
-                dateTime: data.end,
+                dateTime: data.end.dateTime,
                 timeZone: 'Europe/Prague',
             },
         },
     });
-    console.log(event.data);
+    console.log("event created", event.data);
   return { error: null };
   } catch (error: any) {
+      console.log("error creating event", error);
   return {
     error: error.response?.data?.message ?? "Unknown error",
   };
@@ -98,4 +101,31 @@ async function authorize() {
     return client;
   }
 
-export {fetchEvents, createEvent, authorize};
+
+
+async function listEvents(auth: any) {
+  const calendar = google.calendar({version: 'v3', auth});
+  const res = await calendar.events.list({
+    calendarId: 'primary',
+    timeMin: new Date().toISOString(),
+    maxResults: 10,
+    singleEvents: true,
+    orderBy: 'startTime',
+  });
+  const events = res.data.items;
+  if (!events || events.length === 0) {
+    console.log('No upcoming events found.');
+    return;
+  }
+  console.log('Upcoming 10 events:');
+  events.map((event, i) => {
+    if (!event.start) {
+      return;
+    }
+    const start = event.start.dateTime || event.start.date;
+    console.log(`${start} - ${event.summary}`);
+  });
+  return events;
+}
+
+export {fetchEvents, createEvent, authorize, listEvents};

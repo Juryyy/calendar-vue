@@ -35,7 +35,15 @@ export default {
         });
       
         return events;
-      }
+      },
+
+      async getEventByCalEventId(calEventId: string) {
+        return await prisma.googleEvent.findUnique({
+          where: {
+            calEventId: calEventId,
+          },
+        });
+      },
       
 
 }

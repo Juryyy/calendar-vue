@@ -5,7 +5,18 @@ const prisma = new PrismaClient();
 export default {
     async createEvent(event : inputEvent){
         return await prisma.inputEvent.create({
-            data: event
+            data: {
+                title: event.title,
+                description: event.description,
+                start: event.start,
+                end: event.end,
+                uploaded: false,
+                user: {
+                    connect: {
+                        id: event.userId
+                    }
+                }
+            }
         });
     },
 
