@@ -3,6 +3,7 @@ import jwt_decode from "jwt-decode";
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
 import Config from "@/config";
+import {minDate} from "@/code/functions";
 
 export const useEventStore = defineStore("event", () => {
    const events = reactive<any[]>([])

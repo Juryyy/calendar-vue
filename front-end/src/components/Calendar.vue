@@ -1,8 +1,10 @@
 <template>
   <v-container>
   <v-responsive :aspect-ratio="4 / 3" class="border pa-4">
-  <VDatePicker v-model.string="eventStore.pickedDate" mode="date" is-required :masks="masks" :disabledDates="disabledDates" is-dark="system" :min-date="minDate()"  />
-  {{ eventStore.pickedDate }}
+  <VDatePicker v-model.string="eventStore.pickedDate" mode="date" expanded is-required :masks="masks" :disabledDates="disabledDates" is-dark="system" :min-date="minDate()" class="mb-5"/>
+  <v-chip class="d-flex justify-center " color="amber-lighten-1" variant="elevated"  v-if="eventStore.pickedDate === undefined"> Please select avaliable date </v-chip>
+  <v-chip class="d-flex justify-center " color="light-green-lighten-1" variant="elevated"  v-else> Your selected date: {{ eventStore.pickedDate }}</v-chip>
+
   <EventPicker/>
 </v-responsive>
 </v-container>
@@ -13,6 +15,7 @@ import { ref, reactive} from 'vue'
 import EventPicker from './EventPicker.vue';
 import { onMounted } from 'vue';
 import { useEventStore } from '@/store/eventStore';
+import { minDate } from '@/code/functions';
 
 const eventStore = useEventStore();
 
@@ -42,15 +45,4 @@ const disabledDates = ref([
 ])
 
 
-
-function minDate(){
-  let today = new Date();
-  if (today.getDay() === 0){
-    today.setDate(today.getDate() + 1);
-  } else if
-  (today.getDay() === 6){
-    today.setDate(today.getDate() + 2);
-  }
-  return today;
-}
 </script>

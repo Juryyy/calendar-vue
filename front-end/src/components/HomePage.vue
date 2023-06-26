@@ -6,6 +6,10 @@
         src="@/assets/logo.svg"
       />
 
+      <router-link to="/calendar">
+        <v-btn color="primary">Calendar</v-btn>
+      </router-link>
+
   </v-container>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
-    <v-container>
-     <v-table>
+  <v-container :key="containerKey">
+    <v-table>
       <thead>
         <tr>
           <th>Start</th>
@@ -10,65 +10,68 @@
         </tr>
       </thead>
       <tbody>
-        {{ events }}
-        <tr v-for="event in generatedEvents">
-          <td>{{ event.startTime }}</td>
-          <td>{{ event.endTime }}</td>
-          <td>{{ event.status }}</td>
-          <td v-if="event.status === 'free'">
-            <v-btn v-if="user" color="primary">Edit</v-btn>
-            <v-btn color="error" >Delete</v-btn>
-          </td>
-          <td v-else>
-            <v-btn color="green">Reserve</v-btn>
-          </td>
-        </tr>
+        <template v-for="(event, index) in generatedEvents" :key="event.startTime">
+          <tr>
+            <td>{{ event.startTime }}</td>
+            <td>{{ event.endTime }}</td>
+            <td>{{ event.status }}</td>
+            <td v-if="event.status === 'reserved'">
+              <v-btn v-if="user" color="primary" @click="showForm(index)">Edit</v-btn>
+              <v-btn color="error">Delete</v-btn>
+            </td>
+            <td v-else>
+              <v-btn color="green" @click="showForm(index)">Reserve</v-btn>
+            </td>
+          </tr>
+          <!-- Add a new row after the selected event -->
+          <tr v-if="formIndex === index">
+            <td colspan="4">
+              <edit-event :event="generatedEvents[formIndex]" />
+            </td>
+          </tr>
+        </template>
       </tbody>
-     </v-table>
-    </v-container>
+    </v-table>
+  </v-container>
 </template>
+
 
 <script setup lang="ts">
 import {reactive, computed, ref, onMounted, watch} from 'vue'
 import { useAuthStore } from '@/store/authStore';
 import { useEventStore } from '@/store/eventStore';
-import { on } from 'events';
+import editEvent from './editEvent.vue'
 
 const authStore = useAuthStore();
 const eventStore = useEventStore();
 
 const user = computed(() => authStore.user);
 
+const containerKey = ref(0);
 
-interface Event {
-  id?: number;
-  title?: string;
-  description?: string;
-  startDate: string;
-  startTime: string;
-  endDate: string;
-  endTime: string;
-  calEventId?: string;
-  userId?: number;
-  status: string;
-}
+const formIndex = ref(-1);
+
+  function showForm(index: number) {
+    formIndex.value = index;
+    state.index = index;
+  }
+
+const state = reactive({
+  index: -2
+})
 
 
-const generatedEvents : Event[] = [];
+const generatedEvents : CalEvent[] = [];
 
 const events = computed(() => eventStore.events.filter(event => event.startDate === eventStore.pickedDate));
 
 watch(() => eventStore.pickedDate, () => {
   fetchGeneratedEvents();
-})
-
-onMounted(() => {
-  fetchGeneratedEvents();
+  containerKey.value++;
 })
 
 function fetchGeneratedEvents(){
   generatedEvents.splice(0, generatedEvents.length);
-  console.log('fetching events')
 for (let hour = 7; hour < 13; hour++) {
   for (let minute = 0; minute < 60; minute += 20) {
     const start = `${hour}:${minute.toString().padStart(2, '0')}`;
@@ -79,16 +82,16 @@ for (let hour = 7; hour < 13; hour++) {
       endMinute = 0;
     }
     const end = `${endHour}:${endMinute.toString().padStart(2, '0')}`;
-    const existingEvent = events.value.find(event => event.startTime === start);
+    const existingEvent = events.value.find(event => event.startTime.replace(/^0/, '') === start.replace(/^0/, ''));
     if (existingEvent) {
       generatedEvents.push({
         id: existingEvent.id,
         title: existingEvent.title,
         description: existingEvent.description,
         startDate: existingEvent.startDate,
-        startTime: existingEvent.startTime,
+        startTime: existingEvent.startTime.replace(/^0/, ''),
         endDate: existingEvent.endDate,
-        endTime: existingEvent.endTime,
+        endTime: existingEvent.endTime.replace(/^0/, ''),
         calEventId: existingEvent.calEventId,
         userId: existingEvent.userId,
         status: 'reserved'
@@ -114,5 +117,18 @@ for (let hour = 7; hour < 13; hour++) {
 }
 }
 
+
+interface CalEvent {
+  id?: number;
+  title?: string;
+  description?: string;
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
+  calEventId?: string;
+  userId?: number;
+  status: string;
+}
 
 </script>
