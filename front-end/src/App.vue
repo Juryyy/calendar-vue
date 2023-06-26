@@ -8,3 +8,9 @@
 
 
 </script>
+
+<style>
+.v-main, .v-app{
+  background-color: #090d17
+}
+</style>

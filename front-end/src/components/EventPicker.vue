@@ -1,6 +1,6 @@
 <template>
   <v-container :key="containerKey">
-    <v-table>
+    <v-table v-if="eventStore.pickedDate !== undefined">
       <thead>
         <tr>
           <th>Start</th>
@@ -17,16 +17,16 @@
             <td>{{ event.status }}</td>
             <td v-if="event.status === 'reserved'">
               <v-btn v-if="user" color="primary" @click="showForm(index)">Edit</v-btn>
-              <v-btn color="error">Delete</v-btn>
+              <v-btn color="error">Remove</v-btn>
             </td>
             <td v-else>
-              <v-btn color="green" @click="showForm(index)">Reserve</v-btn>
+              <v-btn color="primary" @click="showForm(index)">Reserve</v-btn>
             </td>
           </tr>
           <!-- Add a new row after the selected event -->
-          <tr v-if="formIndex === index">
+          <tr v-if="eventStore.formIndex  === index">
             <td colspan="4">
-              <edit-event :event="generatedEvents[formIndex]" />
+              <edit-event :event="generatedEvents[index]" />
             </td>
           </tr>
         </template>
@@ -49,10 +49,8 @@ const user = computed(() => authStore.user);
 
 const containerKey = ref(0);
 
-const formIndex = ref(-1);
-
   function showForm(index: number) {
-    formIndex.value = index;
+    eventStore.formIndex = index;
     state.index = index;
   }
 
@@ -68,6 +66,7 @@ const events = computed(() => eventStore.events.filter(event => event.startDate 
 watch(() => eventStore.pickedDate, () => {
   fetchGeneratedEvents();
   containerKey.value++;
+  eventStore.formIndex = -2;
 })
 
 function fetchGeneratedEvents(){

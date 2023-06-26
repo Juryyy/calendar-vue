@@ -12,3 +12,18 @@ Content-Type: application/json
     "end": "2023-06-27T09:20:00.000Z",
     "userId": 1
 }
+
+### test create
+POST http://localhost:4000/events/create/test
+Content-Type: application/json
+
+{
+    "title": "Regular visit",
+    "description": "Test of description",
+    "startDate": "26.06.2023",
+    "startTime": "7:00",
+    "endDate": "26.06.2023",
+    "endTime": "7:20",
+    "status": "free",
+    "userId": 1
+}

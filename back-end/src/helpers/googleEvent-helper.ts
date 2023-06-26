@@ -33,5 +33,50 @@ export default {
     }
     console.log(eventsToSend);
     res.json(eventsToSend);
+  },
+
+  async fetchEventsFromG(req: Request, res: Response, next: NextFunction) {
+    const auth = await authorize();
+    const response = await fetchEvents(auth);
+    if (response.error !== null) {
+      return response.error;
+    } else {
+      if (response.events) {
+        for (let event of response.events) {
+          if (
+            event.summary &&
+            event.description &&
+            event.start &&
+            event.end &&
+            event.id &&
+            event.start.dateTime &&
+            event.end.dateTime
+          ) {
+            const calEventId = event.id;
+            const existingEvent =
+              await eventService.googleEvent.getEventByCalEventId(calEventId);
+            if (!existingEvent) {
+              const adjustedStart = new Date(event.start.dateTime);
+              adjustedStart.setHours(adjustedStart.getHours() + 2);
+
+              const adjustedEnd = new Date(event.end.dateTime);
+              adjustedEnd.setHours(adjustedEnd.getHours() + 2);
+
+              const eventToSave: Omit<googleEvent, "id"> = {
+                title: event.summary.split(" ### ")[0],
+                description: event.description,
+                start: adjustedStart,
+                end: adjustedEnd,
+                userId: parseInt(event.summary.split(" ### ")[1]),
+                calEventId: calEventId,
+              };
+              await eventService.googleEvent.createEvent(eventToSave);
+            }
+          }
+        }
+      }
+    }
+    next();
   }
+
 };

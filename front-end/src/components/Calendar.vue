@@ -46,3 +46,9 @@ const disabledDates = ref([
 
 
 </script>
+
+<style scoped>
+.v-responsive, .v-container{
+  background-color: #090d17
+}
+</style>

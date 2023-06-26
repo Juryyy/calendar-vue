@@ -7,3 +7,9 @@
 <script lang="ts" setup>
   //
 </script>
+
+<style>
+.v-main{
+  background-color: #090d17
+}
+</style>

@@ -5,9 +5,28 @@ import { createEvent, authorize, fetchEvents } from "../google/google";
 
 export default {
   async createInputEvent(req: Request, res: Response, next: NextFunction) {
-    const event = req.body as inputEvent;
-    event.start = new Date(event.start);
-    event.end = new Date(event.end);
+    const data = req.body;
+
+    const [startHours, startMinutes] = formatTime(data.startTime);
+    const start = new Date(formatDate(data.startDate));
+    start.setHours(startHours+2);
+    start.setMinutes(startMinutes);
+    
+    const [endHours, endMinutes] = formatTime(data.endTime);
+    const end = new Date(formatDate(data.endDate));
+    end.setHours(endHours+2);
+    end.setMinutes(endMinutes);
+
+    console.log("start", start)
+    console.log("end", end)
+    console.log("data", data)
+
+    const event = {} as inputEvent;
+    event.title = data.title;
+    event.description = data.description;
+    event.userId = data.userId;
+    event.start = new Date(start);
+    event.end = new Date(end);
     if (
       !event.title ||
       !event.description ||
@@ -58,49 +77,21 @@ export default {
     next();
   },
 
-  async fetchEventsFromG(req: Request, res: Response, next: NextFunction) {
-    const auth = await authorize();
-    const response = await fetchEvents(auth);
-    if (response.error !== null) {
-      return response.error;
-    } else {
-      if (response.events) {
-        for (let event of response.events) {
-          if (
-            event.summary &&
-            event.description &&
-            event.start &&
-            event.end &&
-            event.id &&
-            event.start.dateTime &&
-            event.end.dateTime
-          ) {
-            const calEventId = event.id;
-            const existingEvent =
-              await eventService.googleEvent.getEventByCalEventId(calEventId);
-            if (!existingEvent) {
-              const adjustedStart = new Date(event.start.dateTime);
-              adjustedStart.setHours(adjustedStart.getHours() + 2);
-
-              const adjustedEnd = new Date(event.end.dateTime);
-              adjustedEnd.setHours(adjustedEnd.getHours() + 2);
-
-              const eventToSave: Omit<googleEvent, "id"> = {
-                title: event.summary.split(" ### ")[0],
-                description: event.description,
-                start: adjustedStart,
-                end: adjustedEnd,
-                userId: parseInt(event.summary.split(" ### ")[1]),
-                calEventId: calEventId,
-              };
-              await eventService.googleEvent.createEvent(eventToSave);
-            }
-          }
-        }
-      }
-    }
-    next();
-  },
-
+  async test(req: Request, res: Response, next: NextFunction) {
+    console.log("test");
+    console.log(req.body);
+    res.json(req.body);
   
-};
+  },
+  
+}
+
+const formatDate = (date : any) => {
+  const [day, month, year] = date.split('.');
+  return `${year}-${month}-${day}`;
+}
+
+const formatTime = (time : any) => {
+  const [hours, minutes] = time.split(':');
+  return [parseInt(hours), parseInt(minutes)];
+}
