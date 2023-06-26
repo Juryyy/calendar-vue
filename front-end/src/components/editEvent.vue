@@ -38,10 +38,10 @@
 import { ref, reactive, computed } from 'vue'
 import { CalEvent } from '@/code/interface';
 import { useEventStore } from '@/store/eventStore';
+import { useAuthStore } from '@/store/authStore';
 
 const eventStore = useEventStore();
-
-
+const authStore = useAuthStore();
 
 const props = defineProps({
   event: {
@@ -60,7 +60,7 @@ async function Create() {
   event.title = state.selected;
   event.description = state.description;
   event.status = 'reserved';
-  event.userId = 1
+  event.userId = authStore.user.id;
   if(eventStore.pickedDate === undefined) {
     return console.log('no date picked');
   }

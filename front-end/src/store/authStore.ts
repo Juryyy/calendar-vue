@@ -39,9 +39,10 @@ export const useAuthStore = defineStore("auth", () => {
     localStorage.removeItem("token");
   }
 
-  async function register(firstname : string, lastname : string, email : string, password : string){
+  async function register(firstName : string, lastName : string, email : string, password : string){
     try{
-      const response = await axiosInstance.post(Config.apiUrl + "/register", {firstname, lastname, email, password});
+      const response = await axiosInstance.post(Config.apiUrl + "/auth/register", {firstName, lastName, email, password});
+      console.log(response)
       return { error: null };
     }
     catch (error: any) {

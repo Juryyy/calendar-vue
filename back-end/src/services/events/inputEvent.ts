@@ -44,5 +44,48 @@ export default {
             data: event
         });
     },
+    
+    async checkAvailability(event: inputEvent) {
+        const events = await prisma.inputEvent.findMany({
+            where: {
+                OR: [
+                    {
+                        start: {
+                            gte: event.start,
+                            lt: event.end
+                        }
+                    },
+                    {
+                        end: {
+                            gt: event.start,
+                            lte: event.end
+                        }
+                    }
+                ]
+            }
+        });
+        const gEvents = await prisma.googleEvent.findMany({
+            where: {
+                OR: [
+                    {
+                        start: {
+                            gte: event.start,
+                            lt: event.end
+                        }
+                    },
+                    {
+                        end: {
+                            gt: event.start,
+                            lte: event.end
+                        }
+                    }
+                ]
+            }
+        });
+        if (events.length > 0 || gEvents.length > 0) {
+            return false;
+        }
+        return true;
+    },
 
 }

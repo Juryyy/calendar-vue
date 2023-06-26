@@ -18,6 +18,9 @@ const routes = [
     path: '/calendar',
     component: Calendar,
     name: 'Calendar',
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/login',

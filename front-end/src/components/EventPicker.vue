@@ -17,7 +17,7 @@
             <td>{{ event.status }}</td>
             <td v-if="event.status === 'reserved'">
               <v-btn class="mr-1" v-if="event.userId === user.id || user.role === 'ADMIN' " color="yellow-darken-3" @click="showForm(index)">Edit</v-btn>
-              <v-btn class="ml-1" color="error">Remove</v-btn>
+              <v-btn class="ml-1" v-if="event.userId === user.id || user.role === 'ADMIN' " color="error">Remove</v-btn>
             </td>
             <td v-else>
               <v-btn color="primary" @click="showForm(index)">Reserve</v-btn>

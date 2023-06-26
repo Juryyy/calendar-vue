@@ -5,15 +5,16 @@ import authService from "../services/auth-service";
 
 export default {
     register: async (req: Request, res: Response) => {
-        const user = req.body as User;
+        const user = req.body;
+        console.log("", user);
         if(!user.email || !user.password || !user.firstName || !user.lastName || 
             user.firstName === '' || user.lastName === '' || user.email === '' || user.password === '') {
-            return res.status(400).json({ error: 'Please fill all the fields' });
+            return res.status(401).json({ error: 'Please fill all the fields' });
         }
 
         const userExists = await userService.getUserByEmail(user.email);
         if(userExists) {
-            return res.status(400).json({ error: 'Email taken' });
+            return res.status(402).json({ error: 'Email taken' });
         }
 
         const hash = authService.hashPassword(user.password);

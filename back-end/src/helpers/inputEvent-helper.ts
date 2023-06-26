@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import eventService from "../services/event-service";
 import { inputEvent, googleEvent } from "@prisma/client";
 import { createEvent, authorize, fetchEvents } from "../google/google";
+import { eventInputChecker } from "../helpers/inputChecker";
 
 export default {
   async createInputEvent(req: Request, res: Response, next: NextFunction) {
@@ -17,25 +18,19 @@ export default {
     end.setHours(endHours+2);
     end.setMinutes(endMinutes);
 
-    console.log("start", start)
-    console.log("end", end)
-    console.log("data", data)
-
     const event = {} as inputEvent;
     event.title = data.title;
     event.description = data.description;
     event.userId = data.userId;
     event.start = new Date(start);
     event.end = new Date(end);
-    if (
-      !event.title ||
-      !event.description ||
-      !event.start ||
-      !event.end ||
-      event.title === "" ||
-      event.description === ""
-    ) {
+    
+    if (eventInputChecker(event) === false) {
       return res.status(400).json({ error: "Please fill all the fields" });
+    }
+    const timeCheck = await eventService.inputEvent.checkAvailability(event);
+    if (!timeCheck) {
+      return res.status(400).json({ error: "Time is taken" });
     }
     const createdEvent = await eventService.inputEvent.createEvent(event);
     res.json(createdEvent);
