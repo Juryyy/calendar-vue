@@ -25,6 +25,7 @@ export const useAuthStore = defineStore("auth", () => {
       setBearerAuthToken(token);
       localStorage.setItem("token", token);
       user.value = jwt_decode(token);
+      console.log(user.value)
       return { error: null };
     } catch (error: any) {
       return {

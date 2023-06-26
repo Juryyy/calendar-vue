@@ -16,8 +16,8 @@
             <td>{{ event.endTime }}</td>
             <td>{{ event.status }}</td>
             <td v-if="event.status === 'reserved'">
-              <v-btn v-if="user" color="primary" @click="showForm(index)">Edit</v-btn>
-              <v-btn color="error">Remove</v-btn>
+              <v-btn class="mr-1" v-if="event.userId === user.id || user.role === 'ADMIN' " color="yellow-darken-3" @click="showForm(index)">Edit</v-btn>
+              <v-btn class="ml-1" color="error">Remove</v-btn>
             </td>
             <td v-else>
               <v-btn color="primary" @click="showForm(index)">Reserve</v-btn>
@@ -44,7 +44,7 @@ import editEvent from './editEvent.vue'
 const authStore = useAuthStore();
 const eventStore = useEventStore();
 
-const user = computed(() => authStore.user);
+const user = authStore.user
 
 const containerKey = ref(0);
 

@@ -6,8 +6,9 @@ import crypto from "crypto";
 
 export default{
     generateToken: (user: User) => {
+        const {password, ...userWithoutPassword} = user;
         const tokenPayload = {
-            ...user
+            ...userWithoutPassword
         };
         return jwt.sign(
             tokenPayload as object,

@@ -14,7 +14,7 @@
       </v-col>
 
       <v-col cols="12" md="4">
-      <v-btn color="green" @click="Create()">confirm reservation</v-btn>
+      <v-btn color="green-darken-3" @click="Create()">confirm reservation</v-btn>
       </v-col>
       <v-col cols="12" md="4">
         <v-btn color="red" @click="Cancel()">cancel</v-btn>

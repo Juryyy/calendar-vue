@@ -1,16 +1,12 @@
 <template>
+  <v-main>
   <v-container class="fill-height">
-      <v-img
-        contain
-        height="300"
-        src="@/assets/logo.svg"
-      />
 
-      <router-link to="/calendar">
-        <v-btn color="primary">Calendar</v-btn>
-      </router-link>
+
+
 
   </v-container>
+</v-main>
 </template>
 
 <script lang="ts" setup>
