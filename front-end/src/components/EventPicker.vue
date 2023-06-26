@@ -1,5 +1,5 @@
 <template>
-  <v-container :key="containerKey">
+  <v-container :key="containerKey" id="my-table">
     <v-table v-if="eventStore.pickedDate !== undefined">
       <thead>
         <tr>
@@ -11,7 +11,7 @@
       </thead>
       <tbody>
         <template v-for="(event, index) in generatedEvents" :key="event.startTime">
-          <tr>
+          <tr :id="index === eventStore.formIndex ? 'selected-table' : ''">
             <td>{{ event.startTime }}</td>
             <td>{{ event.endTime }}</td>
             <td>{{ event.status }}</td>
@@ -23,7 +23,6 @@
               <v-btn color="primary" @click="showForm(index)">Reserve</v-btn>
             </td>
           </tr>
-          <!-- Add a new row after the selected event -->
           <tr v-if="eventStore.formIndex  === index">
             <td colspan="4">
               <edit-event :event="generatedEvents[index]" />
@@ -131,3 +130,23 @@ interface CalEvent {
 }
 
 </script>
+<style>
+
+#my-table .v-responsive,
+#my-table .v-container,
+#my-table .v-table,
+#my-table .v-td,
+#my-table .v-tr {
+  background-color: #141c2e;
+  color: #fff;
+}
+
+#my-table .v-table th{
+  color: orange
+}
+
+#selected-table{
+  background-color: rgb(70, 95, 72);
+}
+
+</style>

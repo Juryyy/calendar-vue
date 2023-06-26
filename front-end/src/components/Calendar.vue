@@ -1,4 +1,5 @@
 <template>
+  <v-main>
   <v-container>
   <v-responsive :aspect-ratio="4 / 3" class="border pa-4">
   <VDatePicker v-model.string="eventStore.pickedDate" mode="date" expanded is-required :masks="masks" :disabledDates="disabledDates" is-dark="system" :min-date="minDate()" class="mb-5"/>
@@ -8,6 +9,7 @@
   <EventPicker/>
 </v-responsive>
 </v-container>
+</v-main>
 </template>
 
 <script lang="ts" setup>
@@ -48,7 +50,7 @@ const disabledDates = ref([
 </script>
 
 <style scoped>
-.v-responsive, .v-container{
-  background-color: #090d17
+.v-responsive{
+  background-color:#0e1422 ;
 }
 </style>
