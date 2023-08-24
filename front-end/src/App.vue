@@ -18,11 +18,10 @@ onMounted(() => {
 
 </script>
 
-<style>
+<style scoped>
 .v-main, .v-app{
   background-color: #090d17
 }
-
 .v-sheet, .v-card, .v-navigation-drawer, .v-navigation-drawer__content{
   background-color: #090d17;
   color : whitesmoke;

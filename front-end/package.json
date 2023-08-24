@@ -12,6 +12,7 @@
     "@popperjs/core": "^2.11.8",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
+    "dotenv": "^16.3.1",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^3.1.2",
     "pinia": "^2.0.23",

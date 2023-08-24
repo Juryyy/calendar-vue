@@ -17,7 +17,7 @@
 <script setup lang="ts">
 </script>
 
-<style>
+<style scoped>
 .v-sheet{
   background-color:#090d17 ;
   color: white;

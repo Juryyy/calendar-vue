@@ -67,7 +67,7 @@ const User = computed(() => authStore.user);
 <style scoped>
 
 .v-list-item:hover{
-color:orange
+color:#40bdc2
 }
 
 

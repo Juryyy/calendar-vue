@@ -70,8 +70,13 @@ watch(() => eventStore.pickedDate, () => {
 
 function fetchGeneratedEvents(){
   generatedEvents.splice(0, generatedEvents.length);
-for (let hour = 7; hour < 13; hour++) {
-  for (let minute = 0; minute < 60; minute += 20) {
+
+  const hourStart = parseInt(process.env.VUE_APP_HOUR_START || '7', 10);
+  const hourEnd = parseInt(process.env.VUE_APP_HOUR_END || '13', 10);
+  const minuteJump = parseInt(process.env.VUE_APP_MINUTE_JUMP || '20', 10);
+
+for (let hour = hourStart; hour < hourEnd; hour++) {
+  for (let minute = 0; minute < 60; minute += minuteJump) {
     const start = `${hour}:${minute.toString().padStart(2, '0')}`;
     let endHour = hour;
     let endMinute = minute + 20;

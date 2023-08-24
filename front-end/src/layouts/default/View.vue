@@ -8,7 +8,7 @@
   //
 </script>
 
-<style>
+<style scoped>
 .v-main{
   background-color: #090d17
 }
