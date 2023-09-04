@@ -27,7 +27,8 @@ export const useEventStore = defineStore("event", () => {
     async function createEvent(event : CalEvent) {
         try {
             const response = await axiosInstance.post(Config.apiUrl + "/events/create", event);
-            events.push(response.data);
+            const month = new Date(event.startDate).getMonth();
+            await fetchEvents(month);
             return { error: null };
         } catch (error : any){
             return {
@@ -36,5 +37,17 @@ export const useEventStore = defineStore("event", () => {
         }
     }
 
-   return {events, fetchEvents, pickedDate, formIndex, createEvent};
+    async function editEvent( event: CalEvent){
+      try {
+        const response = await axiosInstance.put(Config.apiUrl + "/events/update", event);
+        return { error: null };
+      }
+      catch (error : any){
+        return {
+          error: error.response?.data?.message ?? "Unknown error",
+        };
+      }
+    }
+
+   return {events, fetchEvents, pickedDate, formIndex, createEvent, editEvent};
 });

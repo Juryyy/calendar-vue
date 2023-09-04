@@ -44,6 +44,27 @@ export default {
           },
         });
       },
+
+      async updateEventData(id: number, title: string, description: string) {
+        return await prisma.googleEvent.update({
+          where: {
+            id: id,
+          },
+          data: {
+            title: title,
+            description: description,
+          },
+        });
+      },
+
+      async getEventsByUserId(userId: number) {
+        return await prisma.googleEvent.findMany({
+          where: {
+            userId: userId,
+          },
+        });
+      },
+
       
 
 }

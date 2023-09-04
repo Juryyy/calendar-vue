@@ -7,6 +7,9 @@ import { OAuth2Client } from 'google-auth-library';
 import dotenv from 'dotenv';
 dotenv.config({ path: './back-end/.env' });
 
+import { googleEvent} from '../types/DBtypes';
+import { NextFunction } from 'express';
+
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
@@ -32,7 +35,7 @@ async function fetchEvents(auth : any){
   }
 }
 
-async function createEvent(auth : any, data : any){
+async function createGoogleEvent(auth : any, data : any){
     const calendar = google.calendar({version: 'v3', auth});
     try{
     const event = await calendar.events.insert({
@@ -53,6 +56,34 @@ async function createEvent(auth : any, data : any){
   return { error: null };
   } catch (error: any) {
       console.log("error creating event", error);
+  return {
+    error: error.response?.data?.message ?? "Unknown error",
+  };
+}
+}
+
+async function updateGoogleEvent(auth: any, data: any){
+  const calendar = google.calendar({version: 'v3', auth});
+  try{
+  const event = await calendar.events.update({
+      calendarId: CALENDAR_ID,
+      eventId: data.calEventId,
+      requestBody: {
+          summary: data.summary,
+          description: data.description,
+          start: {
+              dateTime: data.start.dateTime,
+              timeZone: 'Europe/Prague',
+          },
+          end: {
+              dateTime: data.end.dateTime,
+              timeZone: 'Europe/Prague',
+          },
+      },
+  });
+  return { error: null };
+  } catch (error: any) {
+      console.log("error editing event", error);
   return {
     error: error.response?.data?.message ?? "Unknown error",
   };
@@ -99,4 +130,4 @@ async function authorize() {
   }
 
 
-export {fetchEvents, createEvent, authorize};
+export {fetchEvents, createGoogleEvent, authorize, updateGoogleEvent};

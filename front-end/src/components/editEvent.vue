@@ -8,22 +8,23 @@
         >
         <v-select
         label="Select"
-        v-model="state.selected"
+        v-model="titleModel"
         :items="options">
         </v-select>
       </v-col>
 
       <v-col cols="12" md="4">
-      <v-btn color="green-darken-3" @click="Create()">confirm reservation</v-btn>
+      <v-btn v-if="!props.editing" color="green-darken-3" @click="Create()">Confirm reservation</v-btn>
+      <v-btn v-else color="green-darken-3" @click="Edit()">Confirm edit</v-btn>
       </v-col>
       <v-col cols="12" md="4">
-        <v-btn color="red" @click="Cancel()">cancel</v-btn>
+        <v-btn color="red" @click="Cancel()">Cancel</v-btn>
       </v-col>
       </v-row>
 
       <v-row>
         <v-col cols="12" md="8">
-          <v-textarea label="description" v-model="state.description">
+          <v-textarea label="description" v-model="descriptionModel">
 
           </v-textarea>
         </v-col>
@@ -47,6 +48,10 @@ const props = defineProps({
   event: {
     type: Object as () => CalEvent,
     required: true
+  },
+  editing: {
+    type: Boolean,
+    required: true
   }
 })
 
@@ -56,24 +61,46 @@ const state = reactive({
 })
 
 async function Create() {
-  const event = props.event;
-  event.title = state.selected;
-  event.description = state.description;
-  event.status = 'reserved';
-  event.userId = authStore.user.id;
+
+  props.event.title = state.selected;
+  props.event.description = state.description;
+  props.event.status = 'reserved';
+  props.event.userId = authStore.user.id;
   if(eventStore.pickedDate === undefined) {
     return console.log('no date picked');
   }
-  event.startDate = eventStore.pickedDate;
-  event.endDate = eventStore.pickedDate;
-  await eventStore.createEvent(event);
+  props.event.startDate = eventStore.pickedDate;
+  props.event.endDate = eventStore.pickedDate;
+  await eventStore.createEvent(props.event);
+  const month = new Date(props.event.startDate).getMonth();
+  await eventStore.fetchEvents(month);
+}
+
+async function Edit() {
+  props.event.title = state.selected;
+  props.event.description = state.description;
+  await eventStore.editEvent(props.event);
 }
 
 function Cancel() {
   eventStore.formIndex = -2;
 }
 
-const options = ['Regular visit', 'Documentation', 'Vaccination', 'Surgery', 'Other']
+const options = import.meta.env.VITE_OPTIONS.split(',');
+
+const titleModel = computed<string>({
+  get: () => (props.event.status === "reserved" && props.event.title ? props.event.title : state.selected),
+  set: (value: string) => {
+    state.selected = value;
+  },
+});
+
+const descriptionModel = computed<string>({
+  get: () => (props.event.status === "reserved" && props.event.description ? props.event.description : state.description),
+  set: (value: string) => {
+    state.description = value;
+  },
+});
 
 
 </script>

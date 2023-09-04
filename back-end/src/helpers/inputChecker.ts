@@ -18,3 +18,19 @@ export function eventInputChecker(event: any) {
             return true;
         }
 }
+
+export function descriptionChecker(description: string) {
+    if (description == null || description == "") {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+export function titleChecker(title: string) {
+    if (title == null || title == "") {
+        return false;
+    } else {
+        return true;
+    }
+}

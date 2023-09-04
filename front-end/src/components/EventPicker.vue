@@ -16,16 +16,16 @@
             <td>{{ event.endTime }}</td>
             <td>{{ event.status }}</td>
             <td v-if="event.status === 'reserved'">
-              <v-btn class="mr-1" v-if="event.userId === user.id || user.role === 'ADMIN' " color="yellow-darken-3" @click="showForm(index)">Edit</v-btn>
+              <v-btn class="mr-1" v-if="event.userId === user.id || user.role === 'ADMIN' " color="yellow-darken-3" @click="showForm(index, true)">Edit</v-btn>
               <v-btn class="ml-1" v-if="event.userId === user.id || user.role === 'ADMIN' " color="error">Remove</v-btn>
             </td>
             <td v-else>
-              <v-btn color="primary" @click="showForm(index)">Reserve</v-btn>
+              <v-btn color="primary" @click="showForm(index, false)">Reserve</v-btn>
             </td>
           </tr>
-          <tr v-if="eventStore.formIndex  === index">
+          <tr v-if="eventStore.formIndex === index">
             <td colspan="4">
-              <edit-event :event="generatedEvents[index]" />
+              <edit-event :event="generatedEvents[index]" :editing="state.editing" />
             </td>
           </tr>
         </template>
@@ -40,6 +40,7 @@ import {reactive, computed, ref, onMounted, watch} from 'vue'
 import { useAuthStore } from '@/store/authStore';
 import { useEventStore } from '@/store/eventStore';
 import editEvent from './editEvent.vue'
+import { CalEvent } from '@/code/interface';
 
 const authStore = useAuthStore();
 const eventStore = useEventStore();
@@ -48,13 +49,15 @@ const user = authStore.user
 
 const containerKey = ref(0);
 
-  function showForm(index: number) {
+  function showForm(index: number, editing: boolean) {
     eventStore.formIndex = index;
     state.index = index;
+    state.editing = editing;
   }
 
 const state = reactive({
-  index: -2
+  index: -2,
+  editing: false
 })
 
 
@@ -71,15 +74,15 @@ watch(() => eventStore.pickedDate, () => {
 function fetchGeneratedEvents(){
   generatedEvents.splice(0, generatedEvents.length);
 
-  const hourStart = parseInt(process.env.VUE_APP_HOUR_START || '7', 10);
-  const hourEnd = parseInt(process.env.VUE_APP_HOUR_END || '13', 10);
-  const minuteJump = parseInt(process.env.VUE_APP_MINUTE_JUMP || '20', 10);
+  const hourStart = parseInt(import.meta.env.VITE_HOUR_START || '7', 10);
+  const hourEnd = parseInt(import.meta.env.VITE_HOUR_END || '13', 10);
+  const minuteJump = parseInt(import.meta.env.VITE_MINUTE_JUMP || '20', 10);
 
 for (let hour = hourStart; hour < hourEnd; hour++) {
   for (let minute = 0; minute < 60; minute += minuteJump) {
     const start = `${hour}:${minute.toString().padStart(2, '0')}`;
     let endHour = hour;
-    let endMinute = minute + 20;
+    let endMinute = minute + minuteJump;
     if (endMinute === 60) {
       endHour += 1;
       endMinute = 0;
@@ -120,19 +123,6 @@ for (let hour = hourStart; hour < hourEnd; hour++) {
 }
 }
 
-
-interface CalEvent {
-  id?: number;
-  title?: string;
-  description?: string;
-  startDate: string;
-  startTime: string;
-  endDate: string;
-  endTime: string;
-  calEventId?: string;
-  userId?: number;
-  status: string;
-}
 
 </script>
 <style>
