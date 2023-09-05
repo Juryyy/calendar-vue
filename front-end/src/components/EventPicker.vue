@@ -53,6 +53,9 @@ const containerKey = ref(0);
     eventStore.formIndex = index;
     state.index = index;
     state.editing = editing;
+    eventStore.messageError = '';
+    eventStore.errorValue = 0;
+    eventStore.messageSuccess = '';
   }
 
 const state = reactive({

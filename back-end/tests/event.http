@@ -1,5 +1,5 @@
 ### Get events without admin permissions
-GET http://localhost:4000/events/all
+GET http://localhost:4000/events/all/8
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ4eXpAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiTWFydGluIiwibGFzdE5hbWUiOiLFoHVsYyIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNjkzOTAxMjgzfQ.iuB9VG6EpcMJ1Uzslnv9LxWUaACBu42sX5mwnPlNEOM
 
 ### Get event for user

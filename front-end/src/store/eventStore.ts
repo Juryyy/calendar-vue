@@ -12,11 +12,16 @@ export const useEventStore = defineStore("event", () => {
    const pickedDate = ref<string>()
    const formIndex = ref<number>(-2)
 
+   const messageError = ref<string>('')
+   const messageSuccess = ref<string>('')
+   const errorValue = ref<number>(0)
+
+
     async function fetchEvents(month : number) {
         try {
             const response = await axiosInstance.get(Config.apiUrl + "/events/all/" + month);
             events.splice(0, events.length, ...response.data)
-            return { error: null };
+            return response.data;
         } catch (error : any){
             return {
                 error: error.response?.data?.message ?? "Unknown error",
@@ -24,17 +29,24 @@ export const useEventStore = defineStore("event", () => {
         }
     }
 
-    async function createEvent(event : CalEvent) {
-        try {
-            const response = await axiosInstance.post(Config.apiUrl + "/events/create", event);
-            const month = new Date(event.startDate).getMonth();
-            await fetchEvents(month);
-            return { error: null };
-        } catch (error : any){
-            return {
-                error: error.response?.data?.message ?? "Unknown error",
-            };
+    async function createEvent(event: CalEvent) {
+      try {
+        const response = await axiosInstance.post(Config.apiUrl + "/events/create", event);
+        return response.data;
+      } catch (error: any) {
+        if (error.response && error.response.status === 400) {
+          messageError.value = "Reservation failed: fill all fields";
+          errorValue.value = 400;
+        } else if (error.response && error.response.status === 409) {
+          errorValue.value = 409;
+          messageError.value = "Reservation failed: date already reserved";
+        } else {
+          messageError.value = "Unknown error";
         }
+        return {
+          error: messageError.value,
+        };
+      }
     }
 
     async function editEvent( event: CalEvent){
@@ -49,5 +61,5 @@ export const useEventStore = defineStore("event", () => {
       }
     }
 
-   return {events, fetchEvents, pickedDate, formIndex, createEvent, editEvent};
+   return {events, fetchEvents, pickedDate, formIndex, createEvent, editEvent, messageError, errorValue, messageSuccess};
 });

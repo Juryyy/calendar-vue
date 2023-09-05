@@ -20,6 +20,7 @@
       <v-col cols="12" md="4">
         <v-btn color="red" @click="Cancel()">Cancel</v-btn>
       </v-col>
+
       </v-row>
 
       <v-row>
@@ -30,6 +31,8 @@
         </v-col>
 
       </v-row>
+      <v-chip class="d-flex justify-center " v-if="eventStore.messageError !== ''" color="red" variant="elevated">{{eventStore.messageError}}</v-chip>
+      <v-chip class="d-flex justify-center " v-if="eventStore.messageSuccess !== ''" color="blue" variant="elevated">{{eventStore.messageSuccess}}</v-chip>
     </v-form>
   </v-container>
 
@@ -71,19 +74,28 @@ async function Create() {
   }
   props.event.startDate = eventStore.pickedDate;
   props.event.endDate = eventStore.pickedDate;
-  await eventStore.createEvent(props.event);
+  const response = await eventStore.createEvent(props.event);
   const month = new Date(props.event.startDate).getMonth();
-  await eventStore.fetchEvents(month);
+
+  if(eventStore.errorValue !== 0) {
+    return;
+  }else{
+    await eventStore.fetchEvents(month);
+  }
 }
 
 async function Edit() {
   props.event.title = state.selected;
   props.event.description = state.description;
   await eventStore.editEvent(props.event);
+  eventStore.messageSuccess = 'Reservation edited'
 }
 
 function Cancel() {
   eventStore.formIndex = -2;
+  eventStore.errorValue = 0;
+  eventStore.messageSuccess = '';
+  eventStore.messageError = '';
 }
 
 const options = import.meta.env.VITE_OPTIONS.split(',');

@@ -121,9 +121,8 @@ export default {
   async deleteUploadedEvents(req: Request, res: Response, next: NextFunction) {
     try {
       await eventService.inputEvent.deleteUploadedEvents();
-      res.status(200).json({ message: "Uploaded events deleted" });
     } catch (error) {
-      res.status(500).json({ error: "Failed to delete uploaded events" });
+      console.log(error);
     }
     next();
   },

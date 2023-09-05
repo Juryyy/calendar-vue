@@ -9,7 +9,6 @@ export default {
   async getEventsForMonth(req: Request, res: Response, next: NextFunction) {
     const month = parseInt(req.params.month);
     const events = await eventService.googleEvent.getEventsForMonth(month);
-    console.log(events[0])
     let eventsToSend : any[] = [];
     for (let i = 0; i < events.length; i++) {
       let event = events[i];

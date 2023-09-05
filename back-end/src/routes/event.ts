@@ -8,7 +8,7 @@ import { jwtVerifyUser, jwtVerifyAdmin } from '../middlewear/jwtVerify';
 const router = express.Router();
 
 // * Admin check
-router.use('/all', jwtVerifyAdmin);
+router.use('/allevents', jwtVerifyAdmin);
 router.use('/delete/:id', jwtVerifyAdmin);
 
 // * User check 
@@ -22,7 +22,7 @@ router.use('/user/delete/:id', jwtVerifyUser)
 const uploadFetchMiddlewear= [inputHelper.uploadUnsentEvents, googleHelper.fetchEventsFromG, inputHelper.deleteUploadedEvents]
 
 // * Admin Get
-router.get('/all', uploadFetchMiddlewear, googleHelperAdmin.getEvents);
+router.get('/allevents', uploadFetchMiddlewear, googleHelperAdmin.getEvents);
 
 // * Admin Delete
 router.delete('/delete/:id', uploadFetchMiddlewear, googleHelperAdmin.deleteEvent);
