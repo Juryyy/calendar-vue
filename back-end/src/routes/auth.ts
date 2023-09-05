@@ -1,5 +1,5 @@
 import express from 'express';
-import authHelper from '../helpers/auth-helper';
+import authHelper from '../functions/auth-helper';
 
 const router = express.Router();
 

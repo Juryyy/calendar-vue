@@ -11,9 +11,10 @@ import {
   eventInputChecker,
   titleChecker,
   descriptionChecker,
-} from "../helpers/inputChecker";
+} from "../middlewear/inputChecker";
 
 export default {
+  // * Creates event in input database, will be sent to calendar
   async createInputEvent(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
 
@@ -41,23 +42,23 @@ export default {
     if (!timeCheck) {
       return res.status(400).json({ error: "Time is taken" });
     }
-    const createdEvent = await eventService.inputEvent.createEvent(event);
-    res.json(createdEvent);
+    await eventService.inputEvent.createEvent(event);
     next();
   },
 
+  // * Upload events from input database to google calendar
   async uploadUnsentEvents(req: Request, res: Response, next: NextFunction) {
     const auth = await authorize();
     const events = await eventService.inputEvent.getEventsWithUploadedFalse();
     for (let event of events) {
-      //Edit time to match google calendar
+      //* Edit time to match google calendar
       const adjustedStart = new Date(event.start);
       adjustedStart.setHours(adjustedStart.getHours() - 2);
 
       const adjustedEnd = new Date(event.end);
       adjustedEnd.setHours(adjustedEnd.getHours() - 2);
 
-      //Create event
+      //* Create event
       const googleEvent = {
         summary: event.title + " ### " + event.userId,
         description: event.description,
@@ -81,6 +82,7 @@ export default {
     next();
   },
 
+  // * Update event in google calendar and database
   async updateEvent(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
 
@@ -115,6 +117,18 @@ export default {
     }
     next();
   },
+
+  async deleteUploadedEvents(req: Request, res: Response, next: NextFunction) {
+    try {
+      await eventService.inputEvent.deleteUploadedEvents();
+      res.status(200).json({ message: "Uploaded events deleted" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete uploaded events" });
+    }
+    next();
+  },
+
+
 };
 
 const formatDate = (date: any) => {

@@ -16,7 +16,7 @@ const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 const CALENDAR_ID = process.env.CALENDAR_ID;
 
-//Api cally
+//* Google api cally
 async function fetchEvents(auth : any){
   const calendar = google.calendar({version: 'v3', auth});
   try {
@@ -90,7 +90,23 @@ async function updateGoogleEvent(auth: any, data: any){
 }
 }
 
-//Funkce k ukládání token.json + authorize
+async function deleteEventCalendar(auth: any, calEventId: string){
+  const calendar = google.calendar({version: 'v3', auth});
+  try{
+  const event = await calendar.events.delete({
+      calendarId: CALENDAR_ID,
+      eventId: calEventId,
+  });
+  return { error: null };
+  } catch (error: any) {
+      console.log("error deleting event", error);
+  return {
+    error: error.response?.data?.message ?? "Unknown error",
+  }; 
+}
+}
+
+//* Funkce k ukládání token.json + authorize
 async function loadSavedCredentialsIfExist() {
     try {
       const content = await fs.readFile(TOKEN_PATH);
@@ -130,4 +146,4 @@ async function authorize() {
   }
 
 
-export {fetchEvents, createGoogleEvent, authorize, updateGoogleEvent};
+export {fetchEvents, createGoogleEvent, authorize, updateGoogleEvent, deleteEventCalendar};

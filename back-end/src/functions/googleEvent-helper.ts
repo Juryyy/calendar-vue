@@ -4,27 +4,7 @@ import { inputEvent, googleEvent } from "@prisma/client";
 import { authorize, fetchEvents} from "../google/google";
 
 export default {
-  async getEvents(req: Request, res: Response, next: NextFunction) {
-    // ! TODO:ADMIN CHECK
-    const events = await eventService.googleEvent.getEvents();
-    let eventsToSend : any[] = [];
-    for (let i = 0; i < events.length; i++) {
-      let event = events[i];
-      let eventToSend = {
-        id: event.id,
-        title: event.title,
-        description: event.description,
-        startDate: new Date(event.start).toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}),
-        startTime: event.start.toISOString().split('T')[1].slice(0,5),
-        endDate: new Date(event.end).toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}),
-        endTime: event.end.toISOString().split('T')[1].slice(0,5),
-        calEventId: event.calEventId,
-        userId: event.userId   
-      };
-      eventsToSend.push(eventToSend);
-    }
-    res.json(eventsToSend);
-  },
+
   
   async getEventsForMonth(req: Request, res: Response, next: NextFunction) {
     const month = parseInt(req.params.month);
@@ -50,8 +30,8 @@ export default {
   },
 
   async getEventsForUser(req: Request, res: Response, next: NextFunction) {
-    const userId = parseInt(req.params.userId);
-
+    const userId = req.user?.id;
+    if(userId){
     const events = await eventService.googleEvent.getEventsByUserId(userId);
     if(events){
     let eventsToSend : any[] = [];
@@ -74,8 +54,11 @@ export default {
   } else {
     res.status(400).json({ error: "No events found" });
   }
-  },
-
+  } else {
+    res.status(400).json({ error: "No user found" });
+  }
+},
+  // * Fetch events from google calendar and save them to database
   async fetchEventsFromG(req: Request, res: Response, next: NextFunction) {
     const auth = await authorize();
     const response = await fetchEvents(auth);
@@ -118,6 +101,31 @@ export default {
       }
     }
     next();
+  },
+
+  async getNextEventForUser(req: Request, res: Response, next: NextFunction) {
+    const userId = req.user?.id;
+    if(userId){
+    const event = await eventService.googleEvent.getUpcomingEventForUser(userId);
+    if(event){
+    let eventToSend = {
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      startDate: new Date(event.start).toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}),
+      startTime: event.start.toISOString().split('T')[1].slice(0,5),
+      endDate: new Date(event.end).toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}),
+      endTime: event.end.toISOString().split('T')[1].slice(0,5),
+      calEventId: event.calEventId,
+      userId: event.userId   
+    };
+    res.json(eventToSend);
+  } else {
+    res.status(400).json({ error: "No events found" });
   }
+  } else {
+    res.status(400).json({ error: "No user found" });
+  }
+},
 
 };

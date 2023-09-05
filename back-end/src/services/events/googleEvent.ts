@@ -17,22 +17,30 @@ export default {
         });
     },
 
+    async getEventById(id : number){
+        return await prisma.googleEvent.findUnique({
+            where: {
+                id: id
+            }
+        });
+    },
+
     async getEvents(){  
         return await prisma.googleEvent.findMany();
     },
     
     async getEventsForMonth(month: number) {
-        const startDate = new Date(new Date().getFullYear(), month, 1);
-        const endDate = new Date(new Date().getFullYear(), month + 1, 0);
+      const startDate = new Date(new Date().getFullYear(), month, 1);
+      const endDate = new Date(new Date().getFullYear(), month + 1, 0);
       
-        const events = await prisma.googleEvent.findMany({
-          where: {
-            start: {
-              gte: startDate,
-              lt: endDate,
-            },
+      const events = await prisma.googleEvent.findMany({
+        where: {
+          start: {
+            gte: startDate,
+            lt: endDate,
           },
-        });
+        },
+      });
       
         return events;
       },
@@ -61,6 +69,21 @@ export default {
         return await prisma.googleEvent.findMany({
           where: {
             userId: userId,
+          },
+        });
+      },
+
+
+      async getUpcomingEventForUser(userId: number) {
+        return await prisma.googleEvent.findFirst({
+          where: {
+            userId: userId,
+            start: {
+              gte: new Date(),
+            },
+          },
+          orderBy: {
+            start: 'asc',
           },
         });
       },

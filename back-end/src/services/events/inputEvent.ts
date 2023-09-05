@@ -88,4 +88,12 @@ export default {
         return true;
     },
 
+    async deleteUploadedEvents(){
+        return await prisma.inputEvent.deleteMany({
+            where: {
+                uploaded: true
+            }
+        });
+    }
+
 }
