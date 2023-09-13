@@ -1,9 +1,9 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
-import Calendar from '@/components/Calendar.vue'
-import HomePage from "@/components/HomePage.vue"
-import Login from "@/components/Login.vue"
-import Registration from "@/components/Registration.vue"
+import Calendar from '@/pages/Calendar.vue'
+import HomePage from "@/pages/HomePage.vue"
+import Login from "@/pages/Login.vue"
+import Registration from "@/pages/Registration.vue"
 import { useAuthStore } from '@/store/authStore'
 
 
@@ -33,9 +33,17 @@ const routes = [
     name: 'Registration',
   },
   {
+    path: '/profile',
+    component: () => import('@/pages/Profile.vue'),
+    name: 'Profile',
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('@/components/NotFound.vue'),
+    component: () => import('@/pages/NotFound.vue'),
   },
 ]
 

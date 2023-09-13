@@ -39,13 +39,13 @@
 import {reactive, computed, ref, onMounted, watch} from 'vue'
 import { useAuthStore } from '@/store/authStore';
 import { useEventStore } from '@/store/eventStore';
-import editEvent from './editEvent.vue'
+import editEvent from '@/components/editEvent.vue';
 import { CalEvent } from '@/code/interface';
 
 const authStore = useAuthStore();
 const eventStore = useEventStore();
 
-const user = authStore.user
+const user = authStore.user;
 
 const containerKey = ref(0);
 
