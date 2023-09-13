@@ -104,27 +104,26 @@ export default {
 
   async getNextEventForUser(req: Request, res: Response, next: NextFunction) {
     const userId = req.user?.id;
-    if(userId){
-    const event = await eventService.googleEvent.getUpcomingEventForUser(userId);
-    if(event){
-    let eventToSend = {
-      id: event.id,
-      title: event.title,
-      description: event.description,
-      startDate: new Date(event.start).toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}),
-      startTime: event.start.toISOString().split('T')[1].slice(0,5),
-      endDate: new Date(event.end).toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}),
-      endTime: event.end.toISOString().split('T')[1].slice(0,5),
-      calEventId: event.calEventId,
-      userId: event.userId   
-    };
-    res.json(eventToSend);
-  } else {
-    res.status(400).json({ error: "No events found" });
-  }
-  } else {
-    res.status(400).json({ error: "No user found" });
-  }
-},
-
+    if (userId) {
+      const event = await eventService.googleEvent.getUpcomingEventForUser(userId);
+      if (event) {
+        let eventToSend = {
+          id: event.id,
+          title: event.title,
+          description: event.description,
+          startDate: new Date(event.start).toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}),
+          startTime: event.start.toISOString().split('T')[1].slice(0,5),
+          endDate: new Date(event.end).toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}),
+          endTime: event.end.toISOString().split('T')[1].slice(0,5),
+          calEventId: event.calEventId,
+          userId: event.userId   
+        };
+        res.json(eventToSend);
+      } else {
+        res.status(400).json({ error: "No events found" });
+      }
+    } else {
+      res.status(400).json({ error: "No user found" });
+    }
+  },
 };

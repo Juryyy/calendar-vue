@@ -1,6 +1,6 @@
 import express from 'express';
-import inputHelper from '../functions/inputEvent-helper'
-import googleHelper from '../functions/googleEvent-helper';
+import inputHelper from '../functions/inputEvent'
+import googleHelper from '../functions/googleEvent';
 import googleHelperAdmin from '../functions/googleEventAdmin';
 import { jwtVerifyUser, jwtVerifyAdmin } from '../middlewear/jwtVerify';
 
