@@ -17,6 +17,7 @@ export default {
   // * Creates event in input database, will be sent to calendar
   async createInputEvent(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
+    console.log(data)
 
     const [startHours, startMinutes] = formatTime(data.startTime);
     const start = new Date(formatDate(data.startDate));
@@ -43,6 +44,7 @@ export default {
       return res.status(400).json({ error: "Time is taken" });
     }
     await eventService.inputEvent.createEvent(event);
+    console.log("createInputEvent uspesne dokoncen")
     next();
   },
 
@@ -79,6 +81,7 @@ export default {
         return response.error;
       }
     }
+    console.log("upload unsent events uspesne dokoncen")
     next();
   },
 
@@ -124,6 +127,7 @@ export default {
     } catch (error) {
       console.log(error);
     }
+    console.log("delete uploaded events uspesne dokoncen")
     next();
   },
 

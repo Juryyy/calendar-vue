@@ -7,7 +7,7 @@ GET http://localhost:4000/events/user/next
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ4eXpAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiTWFydGluIiwibGFzdE5hbWUiOiLFoHVsYyIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNjkzOTAxMjgzfQ.iuB9VG6EpcMJ1Uzslnv9LxWUaACBu42sX5mwnPlNEOM
 
 ### Get events with admin permissions
-GET http://localhost:4000/events/all
+GET http://localhost:4000/events/allevents
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ4eXpAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiTWFydGluIiwibGFzdE5hbWUiOiLFoHVsYyIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTY5Mzg5OTg3N30.C9yv5J4ZuCyvcIfgbQ2UQ_52tXZP2VBKlHCtLqNOZNI
 
 
@@ -23,10 +23,13 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ4eXpAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiTWFydGluIiwibGFzdE5hbWUiOiLFoHVsYyIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTY5Mzg5OTg3N30.C9yv5J4ZuCyvcIfgbQ2UQ_52tXZP2VBKlHCtLqNOZNI
 
 {
-    "title": "My 4th Event",
-    "description": "This is my event",
-    "start": "2023-06-27T09:00:00.000Z",
-    "end": "2023-06-27T09:20:00.000Z",
+    "title": "Regular visit",
+    "description": "Test of description",
+    "startDate": "26.09.2023",
+    "startTime": "7:00",
+    "endDate": "26.09.2023",
+    "endTime": "7:30",
+    "status": "free",
     "userId": 1
 }
 

@@ -99,6 +99,7 @@ export default {
         }
       }
     }
+    console.log("fetchEvents from google uspesne dokoncen")
     next();
   },
 

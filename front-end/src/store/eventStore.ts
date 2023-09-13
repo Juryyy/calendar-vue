@@ -31,6 +31,7 @@ export const useEventStore = defineStore("event", () => {
 
     async function createEvent(event: CalEvent) {
       try {
+        console.log(event)
         const response = await axiosInstance.post(Config.apiUrl + "/events/create", event);
         return response.data;
       } catch (error: any) {
