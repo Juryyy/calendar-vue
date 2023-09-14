@@ -15,7 +15,7 @@ router.use('/delete/:id', jwtVerifyAdmin);
 router.use('/all/:month', jwtVerifyUser);
 router.use('/user', jwtVerifyUser);
 router.use('/create', jwtVerifyUser);
-router.use('/update', jwtVerifyUser);
+router.use('/user/update', jwtVerifyUser);
 router.use('/user/delete/:id', jwtVerifyUser)
 
 
@@ -34,7 +34,11 @@ router.get('/user/next', uploadFetchMiddlewear, googleHelper.getNextEventForUser
 
 // * User Post
 router.post('/create', inputHelper.createInputEvent, uploadFetchMiddlewear, end);
-router.post('/update', inputHelper.updateEvent, uploadFetchMiddlewear, end);
+router.post('/user/update', googleHelper.updateEvent, uploadFetchMiddlewear, end);
+
+// * User Delete
+
+router.delete('/user/delete/:id', uploadFetchMiddlewear, googleHelper.deleteEventById, end)
 
 function end(){
     return

@@ -16,8 +16,8 @@
             <td>{{ event.endTime }}</td>
             <td>{{ event.status }}</td>
             <td v-if="event.status === 'reserved'">
-              <v-btn class="mr-1" v-if="event.userId === user.id || user.role === 'ADMIN' " color="yellow-darken-3" @click="showForm(index, true)">Edit</v-btn>
-              <v-btn class="ml-1" v-if="event.userId === user.id || user.role === 'ADMIN' " color="error">Remove</v-btn>
+             <!-- <v-btn class="mr-1" v-if="event.userId === user.id || user.role === 'ADMIN' " color="yellow-darken-3" @click="showForm(index, true)">Edit</v-btn>-->
+              <v-btn class="ml-1" v-if="event.userId === user.id || user.role === 'ADMIN' " color="error" @click="removeEvent(index)">Remove</v-btn>
             </td>
             <td v-else>
               <v-btn color="primary" @click="showForm(index, false)">Reserve</v-btn>
@@ -25,7 +25,13 @@
           </tr>
           <tr v-if="eventStore.formIndex === index">
             <td colspan="4">
-              <edit-event :event="generatedEvents[index]" :editing="state.editing" />
+              <edit-event
+              :event="generatedEvents[index]"
+              :editing="state.editing"
+              @update:title="generatedEvents[index].title = $event"
+              @update:description="updateDescription(index, $event)"
+              @update:editing="state.editing = $event"
+              />
             </td>
           </tr>
         </template>
@@ -41,6 +47,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useEventStore } from '@/store/eventStore';
 import editEvent from '@/components/editEvent.vue';
 import { CalEvent } from '@/code/interface';
+import { propsDef } from 'v-calendar/dist/types/src/use/calendar';
 
 const authStore = useAuthStore();
 const eventStore = useEventStore();
@@ -49,30 +56,55 @@ const user = authStore.user;
 
 const containerKey = ref(0);
 
-  function showForm(index: number, editing: boolean) {
-    eventStore.formIndex = index;
-    state.index = index;
-    state.editing = editing;
-    eventStore.messageError = '';
-    eventStore.errorValue = 0;
-    eventStore.messageSuccess = '';
-  }
+const generatedEvents : CalEvent[] = [];
+
+const events = computed(() => eventStore.events.filter(event => event.startDate === eventStore.pickedDate));
+
+function showForm(index: number, editing: boolean) {
+  eventStore.formIndex = index;
+  state.index = index;
+  state.editing = editing;
+  eventStore.messageError = '';
+  eventStore.errorValue = 0;
+  eventStore.messageSuccess = '';
+}
 
 const state = reactive({
   index: -2,
   editing: false
 })
 
+async function removeEvent(index: number){
+  const eventId = generatedEvents[index].id;
+  await eventStore.deleteEvent(eventId);
+  generatedEvents.splice(index, 1);
+  var pom = eventStore.pickedDate
+  eventStore.pickedDate = undefined;
+  eventStore.pickedDate = pom;
+}
 
-const generatedEvents : CalEvent[] = [];
-
-const events = computed(() => eventStore.events.filter(event => event.startDate === eventStore.pickedDate));
-
-watch(() => eventStore.pickedDate, () => {
+watch( () => eventStore.pickedDate, async () => {
+  if(eventStore.pickedDate !== undefined){
+    const dateParts = eventStore.pickedDate.split('.');
+    if(eventStore.pickedMonth !== parseInt(dateParts[1]))
+    {
+      eventStore.pickedMonth = parseInt(dateParts[1]);
+      await eventStore.fetchEvents(parseInt(dateParts[1]));
+    }
+  }
   fetchGeneratedEvents();
   containerKey.value++;
   eventStore.formIndex = -2;
 })
+
+
+function updateTitle(index: number, title: string) {
+  generatedEvents[index].title = title;
+}
+
+function updateDescription(index: number, description: string) {
+  generatedEvents[index].description = description;
+}
 
 function fetchGeneratedEvents(){
   generatedEvents.splice(0, generatedEvents.length);

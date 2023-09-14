@@ -30,8 +30,11 @@ export default {
     },
     
     async getEventsForMonth(month: number) {
-      const startDate = new Date(new Date().getFullYear(), month, 1);
-      const endDate = new Date(new Date().getFullYear(), month + 1, 0);
+
+      const startDate = new Date(new Date().getFullYear(), month -1, 1);
+      const endDate = new Date(new Date().getFullYear(), month, 0);
+
+      console.log(startDate.toLocaleDateString('en-US'), endDate.toLocaleDateString('en-US'));
       
       const events = await prisma.googleEvent.findMany({
         where: {
@@ -41,7 +44,6 @@ export default {
           },
         },
       });
-      
         return events;
       },
 

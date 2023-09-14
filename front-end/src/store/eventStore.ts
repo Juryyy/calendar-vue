@@ -8,6 +8,7 @@ import { CalEvent } from "@/code/interface";
 
 export const useEventStore = defineStore("event", () => {
    const events = reactive<any[]>([])
+   const pickedMonth = ref<number>(minDate().getMonth() + 1)
 
    const pickedDate = ref<string>()
    const formIndex = ref<number>(-2)
@@ -52,7 +53,7 @@ export const useEventStore = defineStore("event", () => {
 
     async function editEvent( event: CalEvent){
       try {
-        const response = await axiosInstance.put(Config.apiUrl + "/events/update", event);
+        const response = await axiosInstance.put(Config.apiUrl + "/events/user/update", event);
         return { error: null };
       }
       catch (error : any){
@@ -62,5 +63,17 @@ export const useEventStore = defineStore("event", () => {
       }
     }
 
-   return {events, fetchEvents, pickedDate, formIndex, createEvent, editEvent, messageError, errorValue, messageSuccess};
+    async function deleteEvent(id: number | undefined){
+      try {
+        const response = await axiosInstance.delete(Config.apiUrl + "/events/user/delete/" + id);
+        return response.data;
+      }
+      catch (error : any){
+        return {
+          error: error.response?.data?.message ?? "Unknown error",
+        };
+      }
+    }
+
+   return {events, fetchEvents, pickedDate, formIndex, createEvent, editEvent, messageError, errorValue, messageSuccess, deleteEvent, pickedMonth};
 });

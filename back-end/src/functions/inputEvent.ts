@@ -44,7 +44,6 @@ export default {
       return res.status(400).json({ error: "Time is taken" });
     }
     await eventService.inputEvent.createEvent(event);
-    console.log("createInputEvent uspesne dokoncen")
     next();
   },
 
@@ -81,45 +80,9 @@ export default {
         return response.error;
       }
     }
-    console.log("upload unsent events uspesne dokoncen")
     next();
   },
 
-  // * Update event in google calendar and database
-  async updateEvent(req: Request, res: Response, next: NextFunction) {
-    const data = req.body;
-
-    if (!titleChecker(data.title) && !descriptionChecker(data.description)) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
-
-    let googleEvent = await eventService.googleEvent.getEventByCalEventId(
-      data.calEventId
-    );
-
-    if (googleEvent) {
-      await eventService.googleEvent.updateEventData(
-        googleEvent.id,
-        data.title,
-        data.description
-      );
-      let uploadEvent = await eventService.googleEvent.getEventByCalEventId(
-        data.calEventId
-      );
-      if (!uploadEvent) {
-        return res.status(400).json({ error: "Event not found" });
-      }
-      const auth = await authorize();
-
-      const response = await updateGoogleEvent(auth, uploadEvent);
-      if (response.error === null) {
-        res.status(200).json({ message: "Event updated" });
-      } else {
-        return response.error;
-      }
-    }
-    next();
-  },
 
   async deleteUploadedEvents(req: Request, res: Response, next: NextFunction) {
     try {
@@ -127,7 +90,6 @@ export default {
     } catch (error) {
       console.log(error);
     }
-    console.log("delete uploaded events uspesne dokoncen")
     next();
   },
 

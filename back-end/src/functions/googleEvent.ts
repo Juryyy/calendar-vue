@@ -1,7 +1,13 @@
 import {NextFunction, Request, Response } from "express";
 import eventService from "../services/event-service";
 import { inputEvent, googleEvent } from "@prisma/client";
-import { authorize, fetchEvents} from "../google/google";
+import { authorize, fetchEvents, deleteEventCalendar, updateGoogleEvent} from "../google/google";
+
+import {
+  eventInputChecker,
+  titleChecker,
+  descriptionChecker,
+} from "../middlewear/inputChecker";
 
 export default {
 
@@ -99,7 +105,6 @@ export default {
         }
       }
     }
-    console.log("fetchEvents from google uspesne dokoncen")
     next();
   },
 
@@ -127,4 +132,68 @@ export default {
       res.status(400).json({ error: "No user found" });
     }
   },
+
+  async deleteEventById(req: Request, res: Response, next: NextFunction) {
+    const userId = req.user?.id;
+    if(userId){
+      const id = parseInt(req.params.id);
+      const event = await eventService.googleEvent.getEventById(id);
+      if(event){
+        if(event.userId !== userId){
+          return res.status(400).json({ error: "You are not authorized to delete this event" });
+        }
+      const auth = await authorize();
+      const response = await eventService.googleEvent.deleteEvent(id);
+      const deleteResponse = await deleteEventCalendar(auth, event.calEventId);
+      res.status(200).json({ message: "Event deleted" });
+      } else {
+        res.status(400).json({ error: "No event found" });
+      }
+    } else {
+      res.status(400).json({ error: "No user found" });
+    }
+  },
+
+    // * Update event in google calendar and database
+    async updateEvent(req: Request, res: Response, next: NextFunction) {
+      const data = req.body;
+      const userId = req.user?.id;
+  
+      if (!titleChecker(data.title) && !descriptionChecker(data.description)) {
+        return res.status(400).json({ error: "All fields are required" });
+      }
+  
+      let googleEvent = await eventService.googleEvent.getEventByCalEventId(
+        data.calEventId
+      );
+  
+      if (googleEvent) {
+        if(googleEvent.userId !== userId){
+          return res.status(400).json({ error: "You are not authorized to edit this event" });
+        }
+
+          await eventService.googleEvent.updateEventData(
+            googleEvent.id,
+            data.title,
+            data.description
+          );
+        let uploadEvent = await eventService.googleEvent.getEventByCalEventId(
+          data.calEventId
+        );
+        if (!uploadEvent) {
+          return res.status(400).json({ error: "Event not found" });
+        }
+        const auth = await authorize();
+  
+        const response = await updateGoogleEvent(auth, uploadEvent);
+        if (response.error === null) {
+          res.status(200).json({ message: "Event updated" });
+        } else {
+          return response.error;
+        }
+      }
+      next();
+    },
+
+
 };

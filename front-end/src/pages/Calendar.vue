@@ -22,7 +22,7 @@ import { minDate } from '@/code/functions';
 const eventStore = useEventStore();
 
 onMounted(async () => {
-  await eventStore.fetchEvents(minDate().getMonth());
+  await eventStore.fetchEvents(minDate().getMonth() + 1);
 });
 
 

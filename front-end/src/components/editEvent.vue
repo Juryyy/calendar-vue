@@ -47,6 +47,9 @@ import { useAuthStore } from '@/store/authStore';
 const eventStore = useEventStore();
 const authStore = useAuthStore();
 
+
+const emit = defineEmits(['update:title', 'update:description', 'update:editing'])
+
 const props = defineProps({
   event: {
     type: Object as () => CalEvent,
@@ -64,7 +67,7 @@ const state = reactive({
 })
 
 async function Create() {
-
+  console.log('halooo1')
   props.event.title = state.selected;
   props.event.description = state.description;
   props.event.status = 'reserved';
@@ -74,17 +77,26 @@ async function Create() {
   }
   props.event.startDate = eventStore.pickedDate;
   props.event.endDate = eventStore.pickedDate;
-  const response = await eventStore.createEvent(props.event);
+  console.log('halooo3')
+  await eventStore.createEvent(props.event);
+  console.log('halooo2')
   const month = new Date(props.event.startDate).getMonth();
+  console.log('halooo')
 
   if(eventStore.errorValue !== 0) {
+    console.log('error');
     return;
   }else{
+    console.log('success');
     await eventStore.fetchEvents(month);
   }
+  console.log('test');
+  eventStore.messageSuccess = 'Reservation created'
+  Cancel();
 }
 
 async function Edit() {
+  // * not working
   props.event.title = state.selected;
   props.event.description = state.description;
   await eventStore.editEvent(props.event);
@@ -96,6 +108,7 @@ function Cancel() {
   eventStore.errorValue = 0;
   eventStore.messageSuccess = '';
   eventStore.messageError = '';
+  emit('update:editing', false);
 }
 
 const options = import.meta.env.VITE_OPTIONS.split(',');
@@ -104,6 +117,7 @@ const titleModel = computed<string>({
   get: () => (props.event.status === "reserved" && props.event.title ? props.event.title : state.selected),
   set: (value: string) => {
     state.selected = value;
+    emit('update:title', value);
   },
 });
 
@@ -111,6 +125,7 @@ const descriptionModel = computed<string>({
   get: () => (props.event.status === "reserved" && props.event.description ? props.event.description : state.description),
   set: (value: string) => {
     state.description = value;
+    emit('update:description', value);
   },
 });
 
