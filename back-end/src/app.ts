@@ -2,9 +2,26 @@ import cors from 'cors';
 import express, { Express, Request, Response } from 'express';
 import router from './router';
 import { verifyAndDeleteExpiredToken } from './google/verifytoken';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
+
 
 const tokenFilePath = '../back-end/token.json';
 const app: Express = express();
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Calendar Backend API',
+      version: '1.0.0',
+    },
+  },
+  apis: ['./src/routes/*.ts'], // files containing annotations as above
+};
+
+const openapiSpecification = swaggerJsdoc(options);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
 app.use(cors());
 
