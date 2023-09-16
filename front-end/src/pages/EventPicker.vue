@@ -28,7 +28,7 @@
               <edit-event
               :event="generatedEvents[index]"
               :editing="state.editing"
-              @update:title="generatedEvents[index].title = $event"
+              @update:title="updateTitle(index, $event)"
               @update:description="updateDescription(index, $event)"
               @update:editing="state.editing = $event"
               />
@@ -99,10 +99,18 @@ watch( () => eventStore.pickedDate, async () => {
 
 
 function updateTitle(index: number, title: string) {
+  const matchingEventIndex = eventStore.events.findIndex(event => event.calEventId === generatedEvents[index].calEventId);
+  if (matchingEventIndex !== -1) {
+    eventStore.events[matchingEventIndex].title = title;
+  }
   generatedEvents[index].title = title;
 }
 
 function updateDescription(index: number, description: string) {
+  const matchingEventIndex = eventStore.events.findIndex(event => event.calEventId === generatedEvents[index].calEventId);
+  if (matchingEventIndex !== -1) {
+    eventStore.events[matchingEventIndex].description = description;
+  }
   generatedEvents[index].description = description;
 }
 

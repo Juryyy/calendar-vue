@@ -32,7 +32,7 @@ export default {
         if(user) {
             return res.status(200).json({ message: true });
         }
-        return res.status(200).json({ message: false });
+        return res.status(402).json({ message: false });
     },
 
 
