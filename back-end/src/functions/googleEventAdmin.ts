@@ -36,5 +36,31 @@ export default{
         } else {
           res.status(400).json({ error: "No event found" });
         }
+      },
+
+      async getEventsForUser(req: Request, res: Response, next: NextFunction) {
+        const id = parseInt(req.params.id);
+        const events = await eventService.googleEvent.getEventsByUserId(id);
+        let eventsToSend : any[] = [];
+        for (let i = 0; i < events.length; i++) {
+          let event = events[i];
+          let eventToSend = {
+            id: event.id,
+            title: event.title,
+            description: event.description,
+            startDate: new Date(event.start).toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}),
+            startTime: event.start.toISOString().split('T')[1].slice(0,5),
+            endDate: new Date(event.end).toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}),
+            endTime: event.end.toISOString().split('T')[1].slice(0,5),
+            calEventId: event.calEventId,
+            userId: event.userId   
+          };
+          eventsToSend.push(eventToSend);
+        }
+        if(eventsToSend.length > 0){
+          res.json(eventsToSend);
+        } else {
+        res.status(400).json({ error: "No events found" });
+        }
       }
 }

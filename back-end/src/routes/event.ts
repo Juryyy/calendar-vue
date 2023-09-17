@@ -5,20 +5,23 @@ import googleHelperAdmin from '../functions/googleEventAdmin';
 import { jwtVerifyUser, jwtVerifyAdmin } from '../middlewear/jwtVerify';
 
 const router = express.Router();
+const uploadFetchMiddlewear= [inputHelper.uploadUnsentEvents, googleHelper.fetchEventsFromG, inputHelper.deleteUploadedEvents]
 
 
 // * Admin check
 router.use('/allevents', jwtVerifyAdmin);
 router.use('/delete/:id', jwtVerifyAdmin);
+router.use('/admin/userEvents/:id', jwtVerifyAdmin);
 
 // * User check 
 router.use('/all/:month', jwtVerifyUser);
 router.use('/user', jwtVerifyUser);
 router.use('/create', jwtVerifyUser);
 router.use('/user/update', jwtVerifyUser);
-router.use('/user/delete/:id', jwtVerifyUser)
+router.use('/user/delete/:id', jwtVerifyUser);
+router.use('/user/events', jwtVerifyUser);
 
-
+//* Admin
 /**
  * @swagger
  * /event/allevents:
@@ -35,7 +38,7 @@ router.use('/user/delete/:id', jwtVerifyUser)
  *       401:
  *         description: Unauthorized
  */
-router.get('/allevents', googleHelperAdmin.getEvents, end);
+router.get('/allevents', uploadFetchMiddlewear, googleHelperAdmin.getEvents, end);
 
 /**
  * @swagger
@@ -62,8 +65,34 @@ router.get('/allevents', googleHelperAdmin.getEvents, end);
  *       404:
  *         description: Event not found
  */
-router.delete('/delete/:id', googleHelperAdmin.deleteEvent, end);
+router.delete('/delete/:id', uploadFetchMiddlewear, googleHelperAdmin.deleteEvent, end);
 
+
+/**
+ * @swagger
+ * /event/admin/userEvents/{id}:
+ *   get:
+ *     summary: Get all events for a specific user (Admin)
+ *     tags:
+ *       - Admin
+ *       - Event
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the user to retrieve events for
+ *     responses:
+ *       200:
+ *         description: Success
+ *       401:
+ *         description: Unauthorized
+ */
+router.get('/admin/userEvents/:id', uploadFetchMiddlewear, googleHelperAdmin.getEventsForUser, end);
+//* User
 /**
  * @swagger
  * /event/all/{month}:
@@ -87,7 +116,7 @@ router.delete('/delete/:id', googleHelperAdmin.deleteEvent, end);
  *       401:
  *         description: Unauthorized
  */
-router.get('/all/:month', googleHelper.getEventsForMonth, end);
+router.get('/all/:month', uploadFetchMiddlewear, googleHelper.getEventsForMonth, end);
 
 /**
  * @swagger
@@ -105,7 +134,7 @@ router.get('/all/:month', googleHelper.getEventsForMonth, end);
  *       401:
  *         description: Unauthorized
  */
-router.get('/user', googleHelper.getEventsForUser, end);
+router.use('/user/events', uploadFetchMiddlewear, googleHelper.getEventsForUser, end);
 
 /**
  * @swagger
@@ -123,7 +152,7 @@ router.get('/user', googleHelper.getEventsForUser, end);
  *       401:
  *         description: Unauthorized
  */
-router.get('/user/next', googleHelper.getNextEventForUser, end);
+router.get('/user/next', uploadFetchMiddlewear, googleHelper.getNextEventForUser, end);
 
 /**
  * @swagger
@@ -149,7 +178,7 @@ router.get('/user/next', googleHelper.getNextEventForUser, end);
  *       400:
  *         description: Bad request
  */
-router.post('/create', inputHelper.createInputEvent, googleHelper.fetchEventsFromG, end);
+router.post('/create', inputHelper.createInputEvent, uploadFetchMiddlewear, end);
 
 /**
  * @swagger
@@ -174,7 +203,7 @@ router.post('/create', inputHelper.createInputEvent, googleHelper.fetchEventsFro
  *       400:
  *         description: Bad request
  */
-router.post('/user/update', googleHelper.updateEvent, end);
+router.post('/user/update', googleHelper.updateEvent, uploadFetchMiddlewear, end);
 
 /**
  * @swagger
@@ -200,7 +229,7 @@ router.post('/user/update', googleHelper.updateEvent, end);
  *       404:
  *         description: Event not found
  */
-router.delete('/user/delete/:id', googleHelper.deleteEventById, end);
+router.delete('/user/delete/:id', uploadFetchMiddlewear, googleHelper.deleteEventById, end);
 
 function end(){
     return;
