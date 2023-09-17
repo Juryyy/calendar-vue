@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed} from 'vue'
 import { CalEvent } from '@/code/interface';
 import { useEventStore } from '@/store/eventStore';
 import { useAuthStore } from '@/store/authStore';
