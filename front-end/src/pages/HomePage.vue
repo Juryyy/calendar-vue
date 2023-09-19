@@ -1,6 +1,8 @@
 <template>
   <v-main>
   <v-container class="fill-height">
+    <v-row>
+    <v-col cols="15" sm="6" md="3">
     <v-card >
       <v-card-title>Profile</v-card-title>
       <v-card-text>Here you can view your profile, edit it and </v-card-text>
@@ -32,10 +34,8 @@
         <v-btn color="primary" to="/calendar">Go to Contact</v-btn>
       </v-card-actions>
     </v-card>
-
-
-
-
+  </v-col>
+</v-row>
   </v-container>
 </v-main>
 </template>

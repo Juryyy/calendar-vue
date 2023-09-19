@@ -47,7 +47,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useEventStore } from '@/store/eventStore';
 import editEvent from '@/components/editEvent.vue';
 import { CalEvent } from '@/code/interface';
-import { propsDef } from 'v-calendar/dist/types/src/use/calendar';
+import { CFG_HOUR_END, CFG_HOUR_START, CFG_MINUTE_JUMP } from '@/eventConfig'
 
 const authStore = useAuthStore();
 const eventStore = useEventStore();
@@ -114,23 +114,30 @@ function updateDescription(index: number, description: string) {
   generatedEvents[index].description = description;
 }
 
-function fetchGeneratedEvents(){
+function fetchGeneratedEvents() {
   generatedEvents.splice(0, generatedEvents.length);
 
-  const hourStart = parseInt(import.meta.env.VITE_HOUR_START || '7', 10);
-  const hourEnd = parseInt(import.meta.env.VITE_HOUR_END || '13', 10);
-  const minuteJump = parseInt(import.meta.env.VITE_MINUTE_JUMP || '20', 10);
+  const hourStart = CFG_HOUR_START || 7;
+  const hourEnd = CFG_HOUR_END || 13;
+  const minuteJump = CFG_MINUTE_JUMP || 15;
 
-for (let hour = hourStart; hour < hourEnd; hour++) {
-  for (let minute = 0; minute < 60; minute += minuteJump) {
-    const start = `${hour}:${minute.toString().padStart(2, '0')}`;
-    let endHour = hour;
-    let endMinute = minute + minuteJump;
-    if (endMinute === 60) {
-      endHour += 1;
-      endMinute = 0;
+  let previousEnd = null; // Add this variable to store the end time of the previous event
+
+  for (let time = hourStart * 60; time < hourEnd * 60; time += minuteJump) {
+    const hour = Math.floor(time / 60);
+    const minute = time % 60;
+    const start = previousEnd || `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+    let endHour = Math.floor((time + minuteJump) / 60);
+    let endMinute = (time + minuteJump) % 60;
+    const end = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+
+    // Check if the end time exceeds CFG_HOUR_END
+    if (endHour > hourEnd || (endHour === hourEnd && endMinute > 0)) {
+      break;
     }
-    const end = `${endHour}:${endMinute.toString().padStart(2, '0')}`;
+
+    previousEnd = end; // Always update previousEnd to the end of the current event
+
     const existingEvent = events.value.find(event => event.startTime.replace(/^0/, '') === start.replace(/^0/, ''));
     if (existingEvent) {
       generatedEvents.push({
@@ -147,12 +154,12 @@ for (let hour = hourStart; hour < hourEnd; hour++) {
       });
     } else {
       generatedEvents.push({
-        startDate: new Date().toLocaleDateString('de-DE',{
+        startDate: new Date().toLocaleDateString('de-DE', {
           year: 'numeric',
           month: '2-digit',
           day: '2-digit',
         }),
-        startTime: start,
+        startTime: start, // Use the previous end time as the start time
         endDate: new Date().toLocaleDateString('de-DE', {
           year: 'numeric',
           month: '2-digit',
@@ -160,16 +167,14 @@ for (let hour = hourStart; hour < hourEnd; hour++) {
         }),
         endTime: end,
         status: 'free'
-      })
+      });
     }
   }
-}
 }
 
 
 </script>
 <style>
-
 #my-table .v-responsive,
 #my-table .v-container,
 #my-table .v-table,
@@ -180,11 +185,20 @@ for (let hour = hourStart; hour < hourEnd; hour++) {
 }
 
 #my-table .v-table th{
-  color: orange
+  color: orange;
+  background-color: #090c14;
 }
 
 #selected-table{
   background-color: rgb(70, 95, 72);
 }
 
+/* Add the following CSS rules */
+#my-table .v-table tbody tr:nth-child(even) {
+  background-color: #141c2e;
+}
+
+#my-table .v-table tbody tr:nth-child(odd) {
+  background-color: #445163;
+}
 </style>

@@ -10,6 +10,8 @@ export const useEventStore = defineStore("event", () => {
    const events = reactive<any[]>([])
    const pickedMonth = ref<number>(minDate().getMonth() + 1)
 
+   const userEvents = reactive<any[]>([])
+
    const pickedDate = ref<string>()
    const formIndex = ref<number>(-2)
 
@@ -75,5 +77,29 @@ export const useEventStore = defineStore("event", () => {
       }
     }
 
-   return {events, fetchEvents, pickedDate, formIndex, createEvent, editEvent, messageError, errorValue, messageSuccess, deleteEvent, pickedMonth};
+    async function fetchEventsForUser() {
+      try {
+        const response = await axiosInstance.get(Config.apiUrl + "/events/user/events");
+        userEvents.splice(0, userEvents.length, ...response.data)
+        return response.data;
+      } catch (error : any){
+        return {
+          error: error.response?.data?.message ?? "Unknown error",
+        };
+      }
+    }
+
+    async function fetchEventsForUserAdmin(id: number) {
+      try {
+        const response = await axiosInstance.get(Config.apiUrl + "/event/admin/userEvents/" + id);
+        userEvents.splice(0, userEvents.length, ...response.data)
+        return response.data;
+      } catch (error : any){
+        return {
+          error: error.response?.data?.message ?? "Unknown error",
+        };
+      }
+    }
+
+   return {events, fetchEvents, pickedDate, formIndex, createEvent, editEvent, messageError, errorValue, messageSuccess, deleteEvent, pickedMonth, fetchEventsForUser, userEvents, fetchEventsForUserAdmin};
 });

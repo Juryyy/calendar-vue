@@ -28,8 +28,7 @@ router.use('/user/events', jwtVerifyUser);
  *   get:
  *     summary: Get all events (Admin)
  *     tags:
- *       - Admin
- *       - Event
+ *       - Admin Event
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -46,8 +45,7 @@ router.get('/allevents', uploadFetchMiddlewear, googleHelperAdmin.getEvents, end
  *   delete:
  *     summary: Delete an event by ID (Admin)
  *     tags:
- *       - Admin
- *       - Event
+ *       - Admin Event
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -74,8 +72,7 @@ router.delete('/delete/:id', uploadFetchMiddlewear, googleHelperAdmin.deleteEven
  *   get:
  *     summary: Get all events for a specific user (Admin)
  *     tags:
- *       - Admin
- *       - Event
+ *       - Admin Event
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -99,8 +96,7 @@ router.get('/admin/userEvents/:id', uploadFetchMiddlewear, googleHelperAdmin.get
  *   get:
  *     summary: Get all events for a specific month (User)
  *     tags:
- *       - User
- *       - Event
+ *       - User Event
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -122,10 +118,9 @@ router.get('/all/:month', uploadFetchMiddlewear, googleHelper.getEventsForMonth,
  * @swagger
  * /event/user:
  *   get:
- *     summary: Get all events for the authenticated user
+ *     summary: Get all events for the authenticated user (User)
  *     tags:
- *       - User
- *       - Event
+ *       - User Event
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -140,10 +135,9 @@ router.use('/user/events', uploadFetchMiddlewear, googleHelper.getEventsForUser,
  * @swagger
  * /event/user/next:
  *   get:
- *     summary: Get the next event for the authenticated user
+ *     summary: Get the next event for the authenticated user (User)
  *     tags:
- *       - User
- *       - Event
+ *       - User Event
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -160,8 +154,7 @@ router.get('/user/next', uploadFetchMiddlewear, googleHelper.getNextEventForUser
  *   post:
  *     summary: Create a new event (User)
  *     tags:
- *       - User
- *       - Event
+ *       - User Event
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -186,7 +179,7 @@ router.post('/create', inputHelper.createInputEvent, uploadFetchMiddlewear, end)
  *   post:
  *     summary: Update an event (User)
  *     tags:
- *       - User
+ *       - User Event
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -211,7 +204,7 @@ router.post('/user/update', googleHelper.updateEvent, uploadFetchMiddlewear, end
  *   delete:
  *     summary: Delete an event by ID (User)
  *     tags:
- *       - User
+ *       - User Event
  *     security:
  *       - bearerAuth: []
  *     parameters:

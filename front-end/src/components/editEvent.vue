@@ -43,6 +43,7 @@ import { ref, reactive, computed} from 'vue'
 import { CalEvent } from '@/code/interface';
 import { useEventStore } from '@/store/eventStore';
 import { useAuthStore } from '@/store/authStore';
+import { CFG_OPTIONS } from '@/eventConfig';
 
 const eventStore = useEventStore();
 const authStore = useAuthStore();
@@ -111,7 +112,7 @@ function Cancel() {
   emit('update:editing', false);
 }
 
-const options = import.meta.env.VITE_OPTIONS.split(',');
+const options = CFG_OPTIONS.split(',');
 
 const titleModel = computed<string>({
   get: () => (props.event.status === "reserved" && props.event.title ? props.event.title : state.selected),
