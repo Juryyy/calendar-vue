@@ -33,7 +33,7 @@ CREATE TABLE "googleEvent" (
     "description" TEXT NOT NULL,
     "start" TIMESTAMP(3) NOT NULL,
     "end" TIMESTAMP(3) NOT NULL,
-    "calEventId" INTEGER NOT NULL,
+    "calEventId" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
 
     CONSTRAINT "googleEvent_pkey" PRIMARY KEY ("id")
